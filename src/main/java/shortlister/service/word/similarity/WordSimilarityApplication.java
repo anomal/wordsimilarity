@@ -1,13 +1,13 @@
-package shortlister.wordsimilarity;
+package shortlister.service.word.similarity;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class WordsimilarityApplication {
+public class WordSimilarityApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(WordsimilarityApplication.class, args);
+		SpringApplication.run(WordSimilarityApplication.class, args);
 	}
 
 }
