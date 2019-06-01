@@ -1,0 +1,97 @@
+swagger: "2.0"
+info:
+  description: ""
+  version: "1.0.0"
+  title: "Swagger WordSimilarity"
+host: "github.com"
+basePath: "/anomal/wordsimilarity/v1"
+schemes:
+- "https"
+- "http"
+paths:
+  /resumes:
+    post:
+      tags:
+      - "resume"
+      summary: "post resumes"
+      description: ""
+      operationId: "analyzeResumes"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "resumes with ids"
+        required: true
+        schema:
+          $ref: "#/definitions/Request"
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: '#/definitions/Response'
+        405:
+          description: "Invalid input"
+      security:
+      - petstore_auth:
+        - "write:pets"
+        - "read:pets"
+securityDefinitions:
+  petstore_auth:
+    type: "oauth2"
+    authorizationUrl: "http://petstore.swagger.io/oauth/dialog"
+    flow: "implicit"
+    scopes:
+      write:pets: "modify pets in your account"
+      read:pets: "read your pets"
+  api_key:
+    type: "apiKey"
+    name: "api_key"
+    in: "header"
+definitions:
+  Request:
+    type: array
+    items:
+      $ref: "#/definitions/Resume"
+  Resume:
+    type: "object"
+    required:
+    - "id"
+    - "text"
+    properties:
+      id:
+        type: "string"
+      text:
+        type: "string"
+  Response:
+    type: "object"
+    properties:
+      words:
+        type: array
+        items:
+          $ref: "#/definitions/Word"
+      applicants:
+        type: array
+        items:
+          $ref: '#/definitions/Applicant'
+  Word:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+      frequency:
+        type: "integer"
+        format: "int64"
+      x:
+        type: "number"
+      y:
+        type: "number"
+  Applicant:
+    type: object
+    properties:
+      id:
+        type: string
+      nickname:
+        type: string
