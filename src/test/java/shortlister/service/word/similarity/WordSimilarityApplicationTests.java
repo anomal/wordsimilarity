@@ -1,4 +1,4 @@
-package shortlister.wordsimilarity;
+package shortlister.service.word.similarity;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
