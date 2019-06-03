@@ -26,12 +26,12 @@ paths:
         description: "resumes with ids"
         required: true
         schema:
-          $ref: "#/definitions/Request"
+          $ref: "#/definitions/WordSimilarityRequest"
       responses:
         200:
           description: "Success"
           schema:
-            $ref: '#/definitions/Response'
+            $ref: '#/definitions/WordSimilarityResponse'
         405:
           description: "Invalid input"
       security:
@@ -51,7 +51,7 @@ securityDefinitions:
     name: "api_key"
     in: "header"
 definitions:
-  Request:
+  WordSimilarityRequest:
     type: array
     items:
       $ref: "#/definitions/Resume"
@@ -65,7 +65,7 @@ definitions:
         type: "string"
       text:
         type: "string"
-  Response:
+  WordSimilarityResponse:
     type: "object"
     properties:
       words:
