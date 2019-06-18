@@ -85,6 +85,8 @@ public class WordSimilarityService {
         // Write word vectors
         WordVectorSerializer.writeWordVectors(vec, "words.txt");
 
+
+
         //STEP 2: Turn text input into a list of words
         log.info("Load & Vectorize data....");
         File wordFile = new File("words.txt");   //Open the file
@@ -95,8 +97,20 @@ public class WordSimilarityService {
 
         //Nd4j.setDataType(DataBuffer.Type.DOUBLE);
         List<String> cacheList = new ArrayList<>(); //cacheList is a dynamic array of strings used to hold all words
-        for(int i = 0; i < cache.numWords(); i++)   //seperate strings of words into their own list
+        List<Word> words = new ArrayList<>();
+        for(int i = 0; i < cache.numWords(); i++) {  //seperate strings of words into their own list
             cacheList.add(cache.wordAtIndex(i));
+            Word word = new Word();
+            word.setName(cache.wordAtIndex(i));
+            String wordName = cache.wordAtIndex(i);
+            Integer freq = wordCount.get(wordName);
+            if (freq == null) {
+                freq = 0;
+            }
+            word.setFrequency((long)freq);
+            words.add(word);
+            log.info("{} {} {}", i, word.getName(), word.getFrequency());
+        }
 
         //STEP 3: build a dual-tree tsne to use later
         log.info("Build model....");
@@ -119,7 +133,7 @@ public class WordSimilarityService {
         INDArray coords = tsne.getData();
         log.info(coords.shapeInfoToString());
 
-        List<Word> words = new ArrayList<>();
+        List<Word> words2 = new ArrayList<>();
         for (int i = 0; i < coords.size(0); i++) {
             Word word = new Word();
             word.setName("word" + i);
