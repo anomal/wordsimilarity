@@ -22,13 +22,16 @@ import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.primitives.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import shortlister.service.word.similarity.processor.TechnicalResumePreProcessor;
 
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 //@Slf4j
@@ -36,34 +39,14 @@ import java.util.stream.Collectors;
 public class WordSimilarityService {
     private static Logger log = LoggerFactory.getLogger(WordSimilarityService.class);
 
+    @Autowired
+    private TechnicalResumePreProcessor technicalResumePreProcessor;
+
     public WordSimilarityResponse analyze (List<Resume> resumes) throws IOException {
-        Map<String,Integer> wordCount = new HashMap<>();
 
         SentenceIterator iter = new CollectionSentenceIterator(
                 resumes.stream().map(resume -> resume.getText()).collect(Collectors.toList()));
-        iter.setPreProcessor((SentencePreProcessor) resume -> {
-            //log.debug("sentence: {}", sentence);
-            String preprocessed = resume
-                    .toLowerCase()
-                    .replace("pl/sql", "plsql")
-                    .replaceAll("[^a-z0-9+#]", " ")
-                    ;
-            String[] tokenized = preprocessed.split(" ");
-            Set<String> uniqueWords = new HashSet<>();
-            for (String token : tokenized) {
-                uniqueWords.add(token);
-            }
-            for (String uniqueWord : uniqueWords) {
-                Integer count = wordCount.get(uniqueWord);
-                if (count == null) {
-                    wordCount.put(uniqueWord, 1);
-                } else {
-                    wordCount.put(uniqueWord, count + 1);
-                }
-            }
-            log.debug("preprocessed: {}", preprocessed);
-            return preprocessed;
-        });
+        iter.setPreProcessor(technicalResumePreProcessor);
 
         // Split on white spaces in the line to get words
         TokenizerFactory t = new DefaultTokenizerFactory();
@@ -92,22 +75,24 @@ public class WordSimilarityService {
         File wordFile = new File("words.txt");   //Open the file
         //Get the data of all unique word vectors
         Pair<InMemoryLookupTable,VocabCache> vectors = WordVectorSerializer.loadTxt(wordFile);
-        VocabCache cache = vectors.getSecond();
+        VocabCache vocabCache = vectors.getSecond();
         INDArray weights = vectors.getFirst().getSyn0();    //seperate weights of unique words into their own list
+
+        Map<String,Long> wordCounts = technicalResumePreProcessor.getWordCounts();
 
         //Nd4j.setDataType(DataBuffer.Type.DOUBLE);
         List<String> cacheList = new ArrayList<>(); //cacheList is a dynamic array of strings used to hold all words
         List<Word> words = new ArrayList<>();
-        for(int i = 0; i < cache.numWords(); i++) {  //seperate strings of words into their own list
-            cacheList.add(cache.wordAtIndex(i));
+        for(int i = 0; i < vocabCache.numWords(); i++) {  //seperate strings of words into their own list
+            cacheList.add(vocabCache.wordAtIndex(i));
             Word word = new Word();
-            word.setName(cache.wordAtIndex(i));
-            String wordName = cache.wordAtIndex(i);
-            Integer freq = wordCount.get(wordName);
+            word.setName(vocabCache.wordAtIndex(i));
+            String wordName = vocabCache.wordAtIndex(i);
+            Long freq = wordCounts.get(wordName);
             if (freq == null) {
-                freq = 0;
+                freq = 0L;
             }
-            word.setFrequency((long)freq);
+            word.setFrequency(freq);
             words.add(word);
             log.info("{} {} {}", i, word.getName(), word.getFrequency());
         }
@@ -136,15 +121,24 @@ public class WordSimilarityService {
         List<Word> words2 = new ArrayList<>();
         for (int i = 0; i < coords.size(0); i++) {
             Word word = new Word();
-            word.setName("word" + i);
+            word.setName(vocabCache.wordAtIndex(i));
             double x = coords.getDouble(i,0);
             double y = coords.getDouble(i, 1);
             word.setX(new BigDecimal(x));
             word.setY(new BigDecimal(y));
-            log.info("{} {} {}", word.getName(), word.getX(), word.getY());
+            Long freq = wordCounts.get(word.getName());
+            if (freq == null) {
+                freq = 0L;
+            }
+            word.setFrequency(freq);
+            log.info("{} {} {} {} {}", word.getName(), word.getFrequency(),
+                    vocabCache.wordFrequency(word.getName()),
+                    word.getX(), word.getY());
+            words2.add(word);
         }
 
         WordSimilarityResponse response = new WordSimilarityResponse();
+        response.setWords(words2);
 
         return response;
     }
