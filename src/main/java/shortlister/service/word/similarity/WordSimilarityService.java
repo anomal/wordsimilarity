@@ -25,6 +25,8 @@ import shortlister.service.word.similarity.processor.TechnicalResumePreProcessor
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.*;
 import java.util.List;
 
@@ -32,6 +34,9 @@ import java.util.List;
 @Service
 public class WordSimilarityService {
     private static Logger log = LoggerFactory.getLogger(WordSimilarityService.class);
+
+    private static MathContext MATH_CONTEXT = new MathContext(3, RoundingMode.HALF_UP);
+
 
     @Autowired
     private TechnicalResumePreProcessor technicalResumePreProcessor;
@@ -125,10 +130,11 @@ public class WordSimilarityService {
             }
             word.setFrequency(freq);
             BigDecimal size = new BigDecimal(freq).divide(
-                    new BigDecimal(resumeCollector.getMaxUniqueWordFrequency()));
+                    new BigDecimal(resumeCollector.getMaxUniqueWordFrequency()),
+                    MATH_CONTEXT);
             word.setSize(size);
             log.info("{} {} {} {} {}", word.getName(), word.getFrequency(),
-                    vocabCache.wordFrequency(word.getName()),
+                    word.getSize(),
                     word.getX(), word.getY());
             words2.add(word);
         }

@@ -2,11 +2,17 @@ package shortlister.service.word.similarity.processor;
 
 import io.swagger.client.model.Resume;
 import org.deeplearning4j.text.sentenceiterator.SentencePreProcessor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class ResumeCollector {
+
+    private static Logger log = LoggerFactory.getLogger(ResumeCollector.class);
 
     private final List<String> resumeTexts;
     private final Map<String,Long> wordUniqueWordFrequencies = new HashMap<>();
@@ -50,6 +56,7 @@ public class ResumeCollector {
     }
 
     public long getMaxUniqueWordFrequency() {
+        log.info("returning {}", maxUniqueWordFrequency);
         return maxUniqueWordFrequency;
     }
 }
