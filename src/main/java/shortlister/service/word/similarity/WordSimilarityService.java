@@ -39,13 +39,34 @@ import java.util.stream.Collectors;
 public class WordSimilarityService {
     private static Logger log = LoggerFactory.getLogger(WordSimilarityService.class);
 
-    @Autowired
-    private TechnicalResumePreProcessor technicalResumePreProcessor;
 
     public WordSimilarityResponse analyze (List<Resume> resumes) throws IOException {
+        TechnicalResumePreProcessor technicalResumePreProcessor = new TechnicalResumePreProcessor();
 
+        Map<String,Long> wordCounts = new HashMap<>();
         SentenceIterator iter = new CollectionSentenceIterator(
-                resumes.stream().map(resume -> resume.getText()).collect(Collectors.toList()));
+                resumes.stream()
+                        .map(resume -> {
+                            String resumeText = resume.getText();
+                            String[] tokenized = technicalResumePreProcessor.preProcess(resumeText)
+                                    .split(" +");
+
+                            Set<String> uniqueWords = new HashSet<>();
+                            for (String token : tokenized) {
+                                uniqueWords.add(token);
+                            }
+                            for (String uniqueWord : uniqueWords){
+                                Long count = wordCounts.get(uniqueWord);
+                                if (count == null) {
+                                    wordCounts.put(uniqueWord, 1L);
+                                } else {
+                                    wordCounts.put(uniqueWord, count + 1);
+                                }
+                            }
+
+                            return resumeText;
+                        })
+                        .collect(Collectors.toList()));
         iter.setPreProcessor(technicalResumePreProcessor);
 
         // Split on white spaces in the line to get words
@@ -78,7 +99,6 @@ public class WordSimilarityService {
         VocabCache vocabCache = vectors.getSecond();
         INDArray weights = vectors.getFirst().getSyn0();    //seperate weights of unique words into their own list
 
-        Map<String,Long> wordCounts = technicalResumePreProcessor.getWordCounts();
 
         //Nd4j.setDataType(DataBuffer.Type.DOUBLE);
         List<String> cacheList = new ArrayList<>(); //cacheList is a dynamic array of strings used to hold all words
