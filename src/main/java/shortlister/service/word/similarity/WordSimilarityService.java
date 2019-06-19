@@ -3,7 +3,6 @@ package shortlister.service.word.similarity;
 import io.swagger.client.model.Resume;
 import io.swagger.client.model.Word;
 import io.swagger.client.model.WordSimilarityResponse;
-import lombok.extern.slf4j.Slf4j;
 import org.deeplearning4j.models.embeddings.inmemory.InMemoryLookupTable;
 import org.deeplearning4j.models.embeddings.loader.WordVectorSerializer;
 import org.deeplearning4j.models.word2vec.Word2Vec;
@@ -11,19 +10,16 @@ import org.deeplearning4j.models.word2vec.wordstore.VocabCache;
 import org.deeplearning4j.plot.BarnesHutTsne;
 import org.deeplearning4j.text.sentenceiterator.CollectionSentenceIterator;
 import org.deeplearning4j.text.sentenceiterator.SentenceIterator;
-import org.deeplearning4j.text.sentenceiterator.SentencePreProcessor;
 import org.deeplearning4j.text.tokenization.tokenizer.preprocessor.CommonPreprocessor;
 import org.deeplearning4j.text.tokenization.tokenizerfactory.DefaultTokenizerFactory;
 import org.deeplearning4j.text.tokenization.tokenizerfactory.TokenizerFactory;
-import org.nd4j.linalg.api.buffer.DataBuffer;
 import org.nd4j.linalg.api.ndarray.INDArray;
-import org.nd4j.linalg.cpu.nativecpu.NDArray;
-import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.primitives.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import shortlister.service.word.similarity.processor.ResumeCollector;
 import shortlister.service.word.similarity.processor.TechnicalResumePreProcessor;
 
 import java.io.File;
@@ -31,42 +27,19 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 //@Slf4j
 @Service
 public class WordSimilarityService {
     private static Logger log = LoggerFactory.getLogger(WordSimilarityService.class);
 
+    @Autowired
+    private TechnicalResumePreProcessor technicalResumePreProcessor;
 
     public WordSimilarityResponse analyze (List<Resume> resumes) throws IOException {
-        TechnicalResumePreProcessor technicalResumePreProcessor = new TechnicalResumePreProcessor();
 
-        Map<String,Long> wordCounts = new HashMap<>();
-        SentenceIterator iter = new CollectionSentenceIterator(
-                resumes.stream()
-                        .map(resume -> {
-                            String resumeText = resume.getText();
-                            String[] tokenized = technicalResumePreProcessor.preProcess(resumeText)
-                                    .split(" +");
-
-                            Set<String> uniqueWords = new HashSet<>();
-                            for (String token : tokenized) {
-                                uniqueWords.add(token);
-                            }
-                            for (String uniqueWord : uniqueWords){
-                                Long count = wordCounts.get(uniqueWord);
-                                if (count == null) {
-                                    wordCounts.put(uniqueWord, 1L);
-                                } else {
-                                    wordCounts.put(uniqueWord, count + 1);
-                                }
-                            }
-
-                            return resumeText;
-                        })
-                        .collect(Collectors.toList()));
+        ResumeCollector resumeCollector = new ResumeCollector(resumes, technicalResumePreProcessor);
+        SentenceIterator iter = new CollectionSentenceIterator(resumeCollector.getResumeTexts());
         iter.setPreProcessor(technicalResumePreProcessor);
 
         // Split on white spaces in the line to get words
@@ -89,7 +62,7 @@ public class WordSimilarityService {
         // Write word vectors
         WordVectorSerializer.writeWordVectors(vec, "words.txt");
 
-
+        Map<String,Long> wordCounts = resumeCollector.getWordUniqueWordFrequencies();
 
         //STEP 2: Turn text input into a list of words
         log.info("Load & Vectorize data....");
@@ -151,6 +124,9 @@ public class WordSimilarityService {
                 freq = 0L;
             }
             word.setFrequency(freq);
+            BigDecimal size = new BigDecimal(freq).divide(
+                    new BigDecimal(resumeCollector.getMaxUniqueWordFrequency()));
+            word.setSize(size);
             log.info("{} {} {} {} {}", word.getName(), word.getFrequency(),
                     vocabCache.wordFrequency(word.getName()),
                     word.getX(), word.getY());

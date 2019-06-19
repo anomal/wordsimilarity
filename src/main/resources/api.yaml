@@ -84,6 +84,8 @@ definitions:
       frequency:
         type: "integer"
         format: "int64"
+      size:
+        type: "number"
       x:
         type: "number"
       y:
