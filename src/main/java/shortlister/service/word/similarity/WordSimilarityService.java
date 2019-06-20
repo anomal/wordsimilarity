@@ -95,46 +95,44 @@ public class WordSimilarityService {
         INDArray coords = tsne.getData();
         log.info("coords: {}", coords.shapeInfoToString());
 
-        List<Word> words2 = new ArrayList<>();
+        List<Word> words = new ArrayList<>();
         for (int i = 0; i < coords.size(0); i++) {
-            Word word = new Word();
-            word.setName(vocabCache.wordAtIndex(i));
-            double x = coords.getDouble(i,0);
-            double y = coords.getDouble(i, 1);
-            word.setX(new BigDecimal(x));
-            word.setY(new BigDecimal(y));
-            Long freq = wordCounts.get(word.getName());
-            if (freq == null) {
-                freq = 0L;
+            String wordName = vocabCache.wordAtIndex(i);
+            Long freq = wordCounts.get(wordName);
+            if (freq != null && freq > 1) {
+                Word word = new Word();
+                word.setName(wordName);
+                double x = coords.getDouble(i, 0);
+                double y = coords.getDouble(i, 1);
+                word.setX(new BigDecimal(x));
+                word.setY(new BigDecimal(y));
+                word.setFrequency(freq);
+                BigDecimal size = new BigDecimal(freq).divide(
+                        new BigDecimal(resumeCollector.getMaxUniqueWordFrequency()),
+                        MATH_CONTEXT);
+                word.setSize(size);
+                log.info("{} {} {} {} {}", word.getName(), word.getFrequency(),
+                        word.getSize(),
+                        word.getX(), word.getY());
+                words.add(word);
             }
-            word.setFrequency(freq);
-            BigDecimal size = new BigDecimal(freq).divide(
-                    new BigDecimal(resumeCollector.getMaxUniqueWordFrequency()),
-                    MATH_CONTEXT);
-            word.setSize(size);
-            log.info("{} {} {} {} {}", word.getName(), word.getFrequency(),
-                    word.getSize(),
-                    word.getX(), word.getY());
-            words2.add(word);
         }
 
-        List<Word> words3 = words2.stream()
-                .filter(word -> word.getFrequency() > 1)
-                .collect(Collectors.toList());
+        words.sort(new ResumeWordComparator());
 
         WordSimilarityResponse response = new WordSimilarityResponse();
-        words3.sort(new ResumeWordComparator());
-        response.setWords(words3);
-        log.info("words length is {}", words3.size());
+        response.setWords(words);
+        log.info("words length is {}", words.size());
 
-        for (int i = 0; i < 10 && i < words3.size(); i++) {
-            Word w = words3.get(i);
-            Collection<String> wordsNearest = vec.wordsNearest(w.getName(), 10);
-            for (String s : wordsNearest) {
-                log.info("near {}: {}", w.getName(), s);
+        if (log.isDebugEnabled()) {
+            for (int i = 0; i < 10 && i < words.size(); i++) {
+                Word w = words.get(i);
+                Collection<String> wordsNearest = vec.wordsNearest(w.getName(), 10);
+                for (String s : wordsNearest) {
+                    log.info("near {}: {}", w.getName(), s);
+                }
             }
         }
-
 
 
         return response;
