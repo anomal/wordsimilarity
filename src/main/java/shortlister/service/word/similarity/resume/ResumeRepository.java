@@ -1,4 +1,4 @@
-package shortlister.service.word.similarity.processor;
+package shortlister.service.word.similarity.resume;
 
 import io.swagger.client.model.Resume;
 import org.deeplearning4j.text.sentenceiterator.SentencePreProcessor;
