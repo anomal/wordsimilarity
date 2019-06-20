@@ -5,20 +5,18 @@ import org.deeplearning4j.text.sentenceiterator.SentencePreProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.math.MathContext;
-import java.math.RoundingMode;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ResumeCollector {
+public class ResumeRepository {
 
-    private static Logger log = LoggerFactory.getLogger(ResumeCollector.class);
+    private static Logger log = LoggerFactory.getLogger(ResumeRepository.class);
 
     private final List<String> resumeTexts;
     private final Map<String,Long> wordUniqueWordFrequencies = new HashMap<>();
     private long maxUniqueWordFrequency = 0L;
 
-    public ResumeCollector(List<Resume> resumes, SentencePreProcessor resumePreProcessor) {
+    public ResumeRepository(List<Resume> resumes, SentencePreProcessor resumePreProcessor) {
         resumeTexts = resumes.stream()
                 .map(resume -> {
                     String resumeText = resume.getText();

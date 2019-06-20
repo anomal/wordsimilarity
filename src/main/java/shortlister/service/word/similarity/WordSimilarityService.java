@@ -19,7 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import shortlister.service.word.similarity.processor.ResumeCollector;
+import shortlister.service.word.similarity.processor.ResumeRepository;
 import shortlister.service.word.similarity.processor.ResumeWordComparator;
 import shortlister.service.word.similarity.processor.TechnicalResumePreProcessor;
 
@@ -30,7 +30,6 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.*;
 import java.util.List;
-import java.util.stream.Collectors;
 
 //@Slf4j
 @Service
@@ -45,8 +44,8 @@ public class WordSimilarityService {
 
     public WordSimilarityResponse analyze (List<Resume> resumes) throws IOException {
 
-        ResumeCollector resumeCollector = new ResumeCollector(resumes, technicalResumePreProcessor);
-        SentenceIterator iter = new CollectionSentenceIterator(resumeCollector.getResumeTexts());
+        ResumeRepository resumeRepository = new ResumeRepository(resumes, technicalResumePreProcessor);
+        SentenceIterator iter = new CollectionSentenceIterator(resumeRepository.getResumeTexts());
         iter.setPreProcessor(technicalResumePreProcessor);
 
         // Split on white spaces in the line to get words
@@ -69,7 +68,7 @@ public class WordSimilarityService {
         // Write word vectors
         WordVectorSerializer.writeWordVectors(vec, "words.txt");
 
-        Map<String,Long> wordCounts = resumeCollector.getWordUniqueWordFrequencies();
+        Map<String,Long> wordCounts = resumeRepository.getWordUniqueWordFrequencies();
 
         //STEP 2: Turn text input into a list of words
         log.info("Load & Vectorize data....");
@@ -108,7 +107,7 @@ public class WordSimilarityService {
                 word.setY(new BigDecimal(y));
                 word.setFrequency(freq);
                 BigDecimal size = new BigDecimal(freq).divide(
-                        new BigDecimal(resumeCollector.getMaxUniqueWordFrequency()),
+                        new BigDecimal(resumeRepository.getMaxUniqueWordFrequency()),
                         MATH_CONTEXT);
                 word.setSize(size);
                 log.info("{} {} {} {} {}", word.getName(), word.getFrequency(),
