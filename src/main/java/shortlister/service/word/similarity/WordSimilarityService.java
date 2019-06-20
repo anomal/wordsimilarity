@@ -3,8 +3,10 @@ package shortlister.service.word.similarity;
 import io.swagger.client.model.Resume;
 import io.swagger.client.model.Word;
 import io.swagger.client.model.WordSimilarityResponse;
+import org.deeplearning4j.models.embeddings.WeightLookupTable;
 import org.deeplearning4j.models.embeddings.inmemory.InMemoryLookupTable;
 import org.deeplearning4j.models.embeddings.loader.WordVectorSerializer;
+import org.deeplearning4j.models.word2vec.VocabWord;
 import org.deeplearning4j.models.word2vec.Word2Vec;
 import org.deeplearning4j.models.word2vec.wordstore.VocabCache;
 import org.deeplearning4j.plot.BarnesHutTsne;
@@ -56,7 +58,7 @@ public class WordSimilarityService {
         Word2Vec vec = new Word2Vec.Builder()
                 .minWordFrequency(2)
                 .layerSize(100)//100)
-                .seed(42)
+                .seed(0)
                 .windowSize(200)//200)
                 .iterate(iter)
                 .tokenizerFactory(t)
@@ -64,6 +66,9 @@ public class WordSimilarityService {
 
         log.debug("Fitting Word2Vec model....");
         vec.fit();
+
+        WeightLookupTable<VocabWord> lookupTable = vec.getLookupTable();
+        //INDArray weights = lookupTable.getWeights();
 
         // Write word vectors
         WordVectorSerializer.writeWordVectors(vec, "words.txt");
