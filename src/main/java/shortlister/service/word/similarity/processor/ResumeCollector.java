@@ -56,7 +56,6 @@ public class ResumeCollector {
     }
 
     public long getMaxUniqueWordFrequency() {
-        log.info("returning {}", maxUniqueWordFrequency);
         return maxUniqueWordFrequency;
     }
 }

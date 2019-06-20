@@ -30,6 +30,7 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 //@Slf4j
 @Service
@@ -77,29 +78,12 @@ public class WordSimilarityService {
         Pair<InMemoryLookupTable,VocabCache> vectors = WordVectorSerializer.loadTxt(wordFile);
         VocabCache vocabCache = vectors.getSecond();
         INDArray weights = vectors.getFirst().getSyn0();    //seperate weights of unique words into their own list
-
-
-        //Nd4j.setDataType(DataBuffer.Type.DOUBLE);
-        List<String> cacheList = new ArrayList<>(); //cacheList is a dynamic array of strings used to hold all words
-        List<Word> words = new ArrayList<>();
-        for(int i = 0; i < vocabCache.numWords(); i++) {  //seperate strings of words into their own list
-            cacheList.add(vocabCache.wordAtIndex(i));
-            Word word = new Word();
-            word.setName(vocabCache.wordAtIndex(i));
-            String wordName = vocabCache.wordAtIndex(i);
-            Long freq = wordCounts.get(wordName);
-            if (freq == null) {
-                freq = 0L;
-            }
-            word.setFrequency(freq);
-            words.add(word);
-            log.info("{} {} {}", i, word.getName(), word.getFrequency());
-        }
+        log.info("weights: {}", weights.shapeInfoToString());
 
         //STEP 3: build a dual-tree tsne to use later
         log.info("Build model....");
         BarnesHutTsne tsne = new BarnesHutTsne.Builder()
-                .setMaxIter(100).theta(0.5)
+                .setMaxIter(100).theta(0.0D)//.theta(0.5)
                 .normalize(false)
                 .learningRate(500)
                 .useAdaGrad(false)
@@ -108,14 +92,18 @@ public class WordSimilarityService {
 
         //STEP 4: establish the tsne values and save them to a file
         log.info("Store TSNE Coordinates for Plotting....");
-        //String outputFile = "target/archive-tmp/tsne-standard-coords.csv";
-        //(new File(outputFile)).getParentFile().mkdirs();
+        String outputFile = "target/archive-tmp/tsne-standard-coords.csv";
+        (new File(outputFile)).getParentFile().mkdirs();
 
         tsne.fit(weights);
-        //tsne.saveAsFile(cacheList, outputFile);
+        List<String> cacheList = new ArrayList<>(); //cacheList is a dynamic array of strings used to hold all words
+        for(int i = 0; i < vocabCache.numWords(); i++)   //seperate strings of words into their own list
+            cacheList.add(vocabCache.wordAtIndex(i));
+        
+        tsne.saveAsFile(cacheList, outputFile);
 
         INDArray coords = tsne.getData();
-        log.info(coords.shapeInfoToString());
+        log.info("coords: {}", coords.shapeInfoToString());
 
         List<Word> words2 = new ArrayList<>();
         for (int i = 0; i < coords.size(0); i++) {
@@ -140,9 +128,24 @@ public class WordSimilarityService {
             words2.add(word);
         }
 
+        List<Word> words3 = words2.stream()
+                .filter(word -> word.getFrequency() > 1)
+                .collect(Collectors.toList());
+
         WordSimilarityResponse response = new WordSimilarityResponse();
-        words2.sort(new ResumeWordComparator());
-        response.setWords(words2);
+        words3.sort(new ResumeWordComparator());
+        response.setWords(words3);
+        log.info("words length is {}", words3.size());
+
+        for (int i = 0; i < 10 && i < words3.size(); i++) {
+            Word w = words3.get(i);
+            Collection<String> wordsNearest = vec.wordsNearest(w.getName(), 10);
+            for (String s : wordsNearest) {
+                log.info("near {}: {}", w.getName(), s);
+            }
+        }
+
+
 
         return response;
     }
