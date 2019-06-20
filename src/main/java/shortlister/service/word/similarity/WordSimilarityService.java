@@ -90,17 +90,7 @@ public class WordSimilarityService {
 //                .usePca(false)
                 .build();
 
-        //STEP 4: establish the tsne values and save them to a file
-        log.info("Store TSNE Coordinates for Plotting....");
-        String outputFile = "target/archive-tmp/tsne-standard-coords.csv";
-        (new File(outputFile)).getParentFile().mkdirs();
-
         tsne.fit(weights);
-        List<String> cacheList = new ArrayList<>(); //cacheList is a dynamic array of strings used to hold all words
-        for(int i = 0; i < vocabCache.numWords(); i++)   //seperate strings of words into their own list
-            cacheList.add(vocabCache.wordAtIndex(i));
-        
-        tsne.saveAsFile(cacheList, outputFile);
 
         INDArray coords = tsne.getData();
         log.info("coords: {}", coords.shapeInfoToString());
