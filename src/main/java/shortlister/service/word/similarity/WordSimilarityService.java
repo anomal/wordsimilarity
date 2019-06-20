@@ -84,6 +84,8 @@ public class WordSimilarityService {
         INDArray weights = vectors.getFirst().getSyn0();    //seperate weights of unique words into their own list
         log.info("weights: {}", weights.shapeInfoToString());
 
+        log.info("weights[0]: {} {}", weights.getDouble(0, 0), weights.getDouble(0, 1));
+
         //STEP 3: build a dual-tree tsne to use later
         log.info("Build model....");
         BarnesHutTsne tsne = new BarnesHutTsne.Builder()
