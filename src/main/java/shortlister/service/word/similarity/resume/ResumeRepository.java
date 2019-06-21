@@ -16,7 +16,7 @@ public class ResumeRepository {
     private final List<String> resumeTexts;
     private final Map<String,Long> wordUniqueWordFrequencies = new HashMap<>();
     private long maxUniqueWordFrequency = 0L;
-    private final List<Applicant> applicants = new ArrayList<>();
+    private final List<Applicant> applicantNicknames;
 
     public ResumeRepository(List<Resume> resumes, SentencePreProcessor resumePreProcessor) {
         Map<String,String> uniqueWordToIdMap = new HashMap<>();
@@ -50,6 +50,12 @@ public class ResumeRepository {
                 })
                 .collect(Collectors.toList());
 
+        applicantNicknames = createApplicantNickames(resumes, uniqueWordToIdMap);
+    }
+
+    protected static List<Applicant> createApplicantNickames(List<Resume> resumes,
+                                                      Map<String,String> uniqueWordToIdMap) {
+        final List<Applicant> applicants = new ArrayList<>();
         for (Resume resume : resumes) {
             String nickname = null;
             Set<String> keys = uniqueWordToIdMap.keySet();
@@ -68,8 +74,8 @@ public class ResumeRepository {
             applicant.setNickname(nickname);
             applicants.add(applicant);
         }
+        return applicants;
     }
-
 
     public List<String> getResumeTexts() {
         return resumeTexts;
@@ -83,7 +89,7 @@ public class ResumeRepository {
         return maxUniqueWordFrequency;
     }
 
-    public List<Applicant> getApplicants() {
-        return applicants;
+    public List<Applicant> getApplicantNicknames() {
+        return applicantNicknames;
     }
 }

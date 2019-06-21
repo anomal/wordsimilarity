@@ -3,27 +3,12 @@ package shortlister.service.word.similarity;
 import io.swagger.client.model.Resume;
 import io.swagger.client.model.Word;
 import io.swagger.client.model.WordSimilarityResponse;
-import org.deeplearning4j.models.embeddings.WeightLookupTable;
-import org.deeplearning4j.models.embeddings.inmemory.InMemoryLookupTable;
-import org.deeplearning4j.models.embeddings.loader.WordVectorSerializer;
-import org.deeplearning4j.models.word2vec.VocabWord;
-import org.deeplearning4j.models.word2vec.Word2Vec;
-import org.deeplearning4j.models.word2vec.wordstore.VocabCache;
-import org.deeplearning4j.plot.BarnesHutTsne;
-import org.deeplearning4j.text.sentenceiterator.CollectionSentenceIterator;
-import org.deeplearning4j.text.sentenceiterator.SentenceIterator;
-import org.deeplearning4j.text.tokenization.tokenizer.preprocessor.CommonPreprocessor;
-import org.deeplearning4j.text.tokenization.tokenizerfactory.DefaultTokenizerFactory;
-import org.deeplearning4j.text.tokenization.tokenizerfactory.TokenizerFactory;
-import org.nd4j.linalg.api.ndarray.INDArray;
-import org.nd4j.linalg.primitives.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import shortlister.service.word.similarity.resume.*;
 
-import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -81,7 +66,7 @@ public class WordSimilarityService {
         WordSimilarityResponse response = new WordSimilarityResponse();
         response.setWords(words);
         log.info("words length is {}", words.size());
-        response.setApplicants(resumeRepository.getApplicants());
+        response.setApplicants(resumeRepository.getApplicantNicknames());
 
         return response;
     }

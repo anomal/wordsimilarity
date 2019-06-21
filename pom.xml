@@ -89,6 +89,7 @@
 			<version>0.10.1</version>
 			<scope>provided</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>org.deeplearning4j</groupId>
 			<artifactId>deeplearning4j-core</artifactId>
@@ -133,6 +134,7 @@
 						</configOptions>
 						<library>jersey1</library>
 						<output>target/generated-sources</output>
+						<generateApiTests>false</generateApiTests>
 					</configuration>
 				</execution>
 			</executions>
