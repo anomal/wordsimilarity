@@ -32,13 +32,13 @@ public class WordSimilarityService {
 
     public WordSimilarityResponse analyze (List<Resume> resumes) throws IOException {
 
-        ResumeRepository resumeRepository = new ResumeRepository(resumes, technicalResumePreProcessor);
+        ResumeDataRepository resumeDataRepository = new ResumeDataRepository(resumes, technicalResumePreProcessor);
 
-        ResumeWordModel resumeWordModel = new ResumeWordModel(resumeRepository, technicalResumePreProcessor);
+        ResumeWordModel resumeWordModel = new ResumeWordModel(resumeDataRepository, technicalResumePreProcessor);
 
         ResumeWordCloud resumeWordCloud = new ResumeWordCloud(resumeWordModel);
 
-        Map<String,Long> wordCounts = resumeRepository.getWordUniqueWordFrequencies();
+        Map<String,Long> wordCounts = resumeDataRepository.getWordUniqueWordFrequencies();
 
         List<Word> words = new ArrayList<>();
         for (int i = 0; i < resumeWordCloud.getSize(); i++) {
@@ -51,7 +51,7 @@ public class WordSimilarityService {
                 word.setY(resumeWordCloud.getY(i));
                 word.setFrequency(freq);
                 BigDecimal size = new BigDecimal(freq).divide(
-                        new BigDecimal(resumeRepository.getMaxUniqueWordFrequency()),
+                        new BigDecimal(resumeDataRepository.getMaxUniqueWordFrequency()),
                         MATH_CONTEXT);
                 word.setSize(size);
                 log.info("{} {} {} {} {}", word.getName(), word.getFrequency(),
@@ -66,7 +66,7 @@ public class WordSimilarityService {
         WordSimilarityResponse response = new WordSimilarityResponse();
         response.setWords(words);
         log.info("words length is {}", words.size());
-        response.setApplicants(resumeRepository.getApplicantNicknames());
+        response.setApplicants(resumeDataRepository.getApplicantNicknames());
 
         return response;
     }

@@ -18,8 +18,8 @@ public class ResumeWordModel {
     private final static Logger log = LoggerFactory.getLogger(ResumeWordModel.class);
     private final Word2Vec word2Vec;
 
-    public ResumeWordModel(ResumeRepository resumeRepository, SentencePreProcessor resumePreProcessor) {
-        SentenceIterator iter = new CollectionSentenceIterator(resumeRepository.getResumeTexts());
+    public ResumeWordModel(ResumeDataRepository resumeDataRepository, SentencePreProcessor resumePreProcessor) {
+        SentenceIterator iter = new CollectionSentenceIterator(resumeDataRepository.getResumeTexts());
         iter.setPreProcessor(resumePreProcessor);
 
         // Split on white spaces in the line to get words

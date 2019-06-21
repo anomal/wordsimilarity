@@ -9,16 +9,16 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ResumeRepository {
+public class ResumeDataRepository {
 
-    private final static Logger log = LoggerFactory.getLogger(ResumeRepository.class);
+    private final static Logger log = LoggerFactory.getLogger(ResumeDataRepository.class);
 
     private final List<String> resumeTexts;
     private final Map<String,Long> wordUniqueWordFrequencies = new HashMap<>();
     private long maxUniqueWordFrequency = 0L;
     private final List<Applicant> applicantNicknames;
 
-    public ResumeRepository(List<Resume> resumes, SentencePreProcessor resumePreProcessor) {
+    public ResumeDataRepository(List<Resume> resumes, SentencePreProcessor resumePreProcessor) {
         Map<String,String> uniqueWordToIdMap = new HashMap<>();
 
         resumeTexts = resumes.stream()

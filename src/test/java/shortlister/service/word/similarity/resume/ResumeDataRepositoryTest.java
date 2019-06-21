@@ -11,7 +11,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-public class ResumeRepositoryTest {
+public class ResumeDataRepositoryTest {
 
     @Test
     public void testCreateApplicantNicknames() {
@@ -24,7 +24,7 @@ public class ResumeRepositoryTest {
         Map<String,String> wordToIdMap = new HashMap<>();
         wordToIdMap.put("x", "0");
         wordToIdMap.put("xyz", "1");
-        List<Applicant> applicantNicknames = ResumeRepository.createApplicantNickames(resumes, wordToIdMap);
+        List<Applicant> applicantNicknames = ResumeDataRepository.createApplicantNickames(resumes, wordToIdMap);
         assertTrue(applicantNicknames.size() == resumes.size());
         for (Applicant applicant : applicantNicknames) {
             if (applicant.getId().equals("0")) {
