@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import shortlister.service.word.similarity.resume.*;
+import shortlister.service.word.similarity.visualization.ResumeWordCloud;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -30,13 +31,13 @@ public class WordSimilarityService {
     @Autowired
     private ResumeWordComparator resumeWordComparator;
 
-    public WordSimilarityResponse analyze (List<Resume> resumes) throws IOException {
+    public WordSimilarityResponse analyze (List<Resume> resumes, BigDecimal wordAttraction) throws IOException {
 
         ResumeDataRepository resumeDataRepository = new ResumeDataRepository(resumes, technicalResumePreProcessor);
 
         ResumeWordModel resumeWordModel = new ResumeWordModel(resumeDataRepository, technicalResumePreProcessor);
 
-        ResumeWordCloud resumeWordCloud = new ResumeWordCloud(resumeWordModel);
+        ResumeWordCloud resumeWordCloud = new ResumeWordCloud(resumeWordModel, wordAttraction);
 
         Map<String,Long> wordCounts = resumeDataRepository.getWordUniqueWordFrequencies();
 

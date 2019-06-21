@@ -1,20 +1,34 @@
-package shortlister.service.word.similarity.resume;
+package shortlister.service.word.similarity.visualization;
 
 import org.deeplearning4j.models.word2vec.VocabWord;
 import org.deeplearning4j.models.word2vec.wordstore.VocabCache;
 import org.deeplearning4j.plot.BarnesHutTsne;
 import org.nd4j.linalg.api.ndarray.INDArray;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import shortlister.service.word.similarity.resume.ResumeWordModel;
 
 import java.math.BigDecimal;
 
 public class ResumeWordCloud {
 
+    private final static Logger log = LoggerFactory.getLogger(ResumeWordCloud.class);
+    private final static long MIN_PERPLEXITY = 5;
+    private final static BigDecimal DEFAULT_ATTRACTION = new BigDecimal("0.9");
+
     private final INDArray twoDCoords;
     private final VocabCache<VocabWord> vocabCache;
     private final long size;
 
-    public ResumeWordCloud(ResumeWordModel resumeWordModel) {
+    public ResumeWordCloud(ResumeWordModel resumeWordModel, BigDecimal wordAttraction) {
         INDArray nDCoordinates = resumeWordModel.getWeights();
+
+        BigDecimal attraction = DEFAULT_ATTRACTION;
+        if (wordAttraction != null) {
+            attraction = BigDecimal.ONE.max(wordAttraction);
+        }
+        long perplexity = (long)Math.min(MIN_PERPLEXITY, nDCoordinates.size(0) * attraction.doubleValue());
+        log.info("Using a perplexity of {}", perplexity);
 
         BarnesHutTsne tsne = new BarnesHutTsne.Builder()
                 .setMaxIter(100).theta(0.0D)//.theta(0.5)
@@ -22,6 +36,7 @@ public class ResumeWordCloud {
                 .learningRate(500)
                 .useAdaGrad(false)
 //                .usePca(false)
+                .perplexity(perplexity)
                 .build();
 
         tsne.fit(nDCoordinates);

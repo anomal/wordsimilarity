@@ -29,7 +29,7 @@ public class ResumeWordModel {
         log.debug("Building model....");
         word2Vec = new Word2Vec.Builder()
                 .minWordFrequency(2)
-                .layerSize(100)//100)
+                .layerSize(32)//100)
                 .seed(0)
                 .windowSize(200)//200)
                 .iterate(iter)
