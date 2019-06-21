@@ -52,9 +52,16 @@ securityDefinitions:
     in: "header"
 definitions:
   WordSimilarityRequest:
-    type: array
-    items:
-      $ref: "#/definitions/Resume"
+    type: object
+    required:
+      - resumes
+    properties:
+      wordAttraction:
+        type: number
+      resumes:
+        type: array
+        items:
+          $ref: "#/definitions/Resume"
   Resume:
     type: "object"
     required:
