@@ -60,9 +60,7 @@ public class ResumeRepository {
                     }
                 }
             }
-            if (nickname == null) {
-                nickname = UUID.randomUUID().toString().substring(0,6);
-            } else {
+            if (nickname != null) {
                 nickname = nickname.substring(0,1).toUpperCase() + nickname.substring(1);
             }
             Applicant applicant = new Applicant();

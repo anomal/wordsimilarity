@@ -78,6 +78,11 @@ definitions:
           $ref: '#/definitions/Applicant'
   Word:
     type: "object"
+    required:
+      - name
+      - size
+      - x
+      - y
     properties:
       name:
         type: "string"
@@ -92,6 +97,8 @@ definitions:
         type: "number"
   Applicant:
     type: object
+    required:
+      - id
     properties:
       id:
         type: string
