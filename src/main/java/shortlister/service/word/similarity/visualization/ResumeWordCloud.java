@@ -6,7 +6,7 @@ import org.deeplearning4j.plot.BarnesHutTsne;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import shortlister.service.word.similarity.resume.ResumeWordModel;
+import shortlister.service.word.similarity.neuralnet.ResumeWordModel;
 
 import java.math.BigDecimal;
 

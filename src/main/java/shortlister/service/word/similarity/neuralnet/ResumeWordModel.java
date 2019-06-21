@@ -1,4 +1,4 @@
-package shortlister.service.word.similarity.resume;
+package shortlister.service.word.similarity.neuralnet;
 
 import org.deeplearning4j.models.word2vec.VocabWord;
 import org.deeplearning4j.models.word2vec.Word2Vec;
@@ -12,6 +12,7 @@ import org.deeplearning4j.text.tokenization.tokenizerfactory.TokenizerFactory;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import shortlister.service.word.similarity.resume.ResumeDataRepository;
 
 public class ResumeWordModel {
 
