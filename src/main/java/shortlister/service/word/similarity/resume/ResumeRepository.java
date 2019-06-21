@@ -1,5 +1,6 @@
 package shortlister.service.word.similarity.resume;
 
+import io.swagger.client.model.Applicant;
 import io.swagger.client.model.Resume;
 import org.deeplearning4j.text.sentenceiterator.SentencePreProcessor;
 import org.slf4j.Logger;
@@ -15,8 +16,11 @@ public class ResumeRepository {
     private final List<String> resumeTexts;
     private final Map<String,Long> wordUniqueWordFrequencies = new HashMap<>();
     private long maxUniqueWordFrequency = 0L;
+    private final List<Applicant> applicants = new ArrayList<>();
 
     public ResumeRepository(List<Resume> resumes, SentencePreProcessor resumePreProcessor) {
+        Map<String,String> uniqueWordToIdMap = new HashMap<>();
+
         resumeTexts = resumes.stream()
                 .map(resume -> {
                     String resumeText = resume.getText();
@@ -31,8 +35,10 @@ public class ResumeRepository {
                         Long count = wordUniqueWordFrequencies.get(uniqueWord);
                         if (count == null) {
                             count = 1L;
+                            uniqueWordToIdMap.put(uniqueWord, resume.getId());
                         } else {
                             count++;
+                            uniqueWordToIdMap.remove(uniqueWord);
                         }
                         wordUniqueWordFrequencies.put(uniqueWord, count);
                         if (count > maxUniqueWordFrequency) {
@@ -43,7 +49,29 @@ public class ResumeRepository {
                     return resumeText;
                 })
                 .collect(Collectors.toList());
+
+        for (Resume resume : resumes) {
+            String nickname = null;
+            Set<String> keys = uniqueWordToIdMap.keySet();
+            for (String uniqueWord : keys){
+                if (resume.getId().equals(uniqueWordToIdMap.get(uniqueWord))) {
+                    if (nickname == null || uniqueWord.length() > nickname.length()) {
+                        nickname = uniqueWord;
+                    }
+                }
+            }
+            if (nickname == null) {
+                nickname = UUID.randomUUID().toString().substring(0,6);
+            } else {
+                nickname = nickname.substring(0,1).toUpperCase() + nickname.substring(1);
+            }
+            Applicant applicant = new Applicant();
+            applicant.setId(resume.getId());
+            applicant.setNickname(nickname);
+            applicants.add(applicant);
+        }
     }
+
 
     public List<String> getResumeTexts() {
         return resumeTexts;
@@ -55,5 +83,9 @@ public class ResumeRepository {
 
     public long getMaxUniqueWordFrequency() {
         return maxUniqueWordFrequency;
+    }
+
+    public List<Applicant> getApplicants() {
+        return applicants;
     }
 }

@@ -81,6 +81,7 @@ public class WordSimilarityService {
         WordSimilarityResponse response = new WordSimilarityResponse();
         response.setWords(words);
         log.info("words length is {}", words.size());
+        response.setApplicants(resumeRepository.getApplicants());
 
         return response;
     }
