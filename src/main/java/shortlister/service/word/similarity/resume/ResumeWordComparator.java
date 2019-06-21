@@ -1,9 +1,11 @@
 package shortlister.service.word.similarity.resume;
 
 import io.swagger.client.model.Word;
+import org.springframework.stereotype.Component;
 
 import java.util.Comparator;
 
+@Component
 public class ResumeWordComparator implements Comparator<Word> {
 
     @Override

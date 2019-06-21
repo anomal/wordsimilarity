@@ -34,13 +34,16 @@ import java.util.List;
 //@Slf4j
 @Service
 public class WordSimilarityService {
-    private static Logger log = LoggerFactory.getLogger(WordSimilarityService.class);
 
-    private static MathContext MATH_CONTEXT = new MathContext(3, RoundingMode.HALF_UP);
+    private final static Logger log = LoggerFactory.getLogger(WordSimilarityService.class);
 
+    private final static MathContext MATH_CONTEXT = new MathContext(3, RoundingMode.HALF_UP);
 
     @Autowired
     private TechnicalResumePreProcessor technicalResumePreProcessor;
+
+    @Autowired
+    private ResumeWordComparator resumeWordComparator;
 
     public WordSimilarityResponse analyze (List<Resume> resumes) throws IOException {
 
@@ -73,12 +76,11 @@ public class WordSimilarityService {
             }
         }
 
-        words.sort(new ResumeWordComparator());
+        words.sort(resumeWordComparator);
 
         WordSimilarityResponse response = new WordSimilarityResponse();
         response.setWords(words);
         log.info("words length is {}", words.size());
-
 
         return response;
     }

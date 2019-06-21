@@ -15,8 +15,8 @@ import org.slf4j.LoggerFactory;
 
 public class ResumeWordModel {
 
-    private static Logger log = LoggerFactory.getLogger(ResumeWordModel.class);
-    private Word2Vec word2Vec;
+    private final static Logger log = LoggerFactory.getLogger(ResumeWordModel.class);
+    private final Word2Vec word2Vec;
 
     public ResumeWordModel(ResumeRepository resumeRepository, SentencePreProcessor resumePreProcessor) {
         SentenceIterator iter = new CollectionSentenceIterator(resumeRepository.getResumeTexts());

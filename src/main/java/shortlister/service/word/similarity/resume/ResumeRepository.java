@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 public class ResumeRepository {
 
-    private static Logger log = LoggerFactory.getLogger(ResumeRepository.class);
+    private final static Logger log = LoggerFactory.getLogger(ResumeRepository.class);
 
     private final List<String> resumeTexts;
     private final Map<String,Long> wordUniqueWordFrequencies = new HashMap<>();

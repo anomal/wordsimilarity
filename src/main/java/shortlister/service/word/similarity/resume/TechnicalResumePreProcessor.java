@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class TechnicalResumePreProcessor implements SentencePreProcessor {
 
-    private static Logger log = LoggerFactory.getLogger(TechnicalResumePreProcessor.class);
+    private final static Logger log = LoggerFactory.getLogger(TechnicalResumePreProcessor.class);
 
     @Override
     public String preProcess(String resume) {
