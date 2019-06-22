@@ -32,7 +32,7 @@ public class WordSimilarityService {
     @Autowired
     private ResumeWordComparator resumeWordComparator;
 
-    public WordSimilarityResponse analyze (List<Resume> resumes, BigDecimal wordAttraction) throws IOException {
+    public WordSimilarityResponse analyze (List<Resume> resumes, BigDecimal wordAttraction) {
 
         ResumeDataRepository resumeDataRepository = new ResumeDataRepository(resumes, technicalResumePreProcessor);
 
