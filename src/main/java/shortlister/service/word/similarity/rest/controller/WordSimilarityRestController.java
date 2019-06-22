@@ -26,7 +26,7 @@ public class WordSimilarityRestController {
         try {
             response = service.analyze(request.getResumes(), request.getWordAttraction());
             return  response;
-        } catch (IOException e) {
+        } catch (RuntimeException e) {
             log.error(e.getMessage(), e);
             return null;
         }
