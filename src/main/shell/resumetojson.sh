@@ -7,7 +7,9 @@ then
 fi
 
 path=$1
-echo "["
+echo '{'
+echo '    "wordAttraction" : 0.8,'
+echo '    "resumes" : ['
 
 i=0
 for r in `find $path -type f`
@@ -18,11 +20,13 @@ do
 	fi
  
 	text=`cat $r`
-	echo '    {'
-	echo '        "id" : "'$i'",'
-	echo '        "text" : "'$text'"'
-	echo '    }'
+	echo '        {'
+	echo '            "id" : "'$i'",'
+	echo '            "text" : "'$text'"'
+	echo '        }'
 	((i++))
 done
-echo "]"
+echo '    ]'
+
+echo '}'
 
