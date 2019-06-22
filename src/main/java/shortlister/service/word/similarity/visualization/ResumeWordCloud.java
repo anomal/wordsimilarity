@@ -4,6 +4,7 @@ import org.deeplearning4j.models.word2vec.VocabWord;
 import org.deeplearning4j.models.word2vec.wordstore.VocabCache;
 import org.deeplearning4j.plot.BarnesHutTsne;
 import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.io.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import shortlister.service.word.similarity.neuralnet.ResumeWordModel;
@@ -14,13 +15,16 @@ public class ResumeWordCloud {
 
     private final static Logger log = LoggerFactory.getLogger(ResumeWordCloud.class);
     private final static long MIN_PERPLEXITY = 5;
-    private final static BigDecimal DEFAULT_ATTRACTION = new BigDecimal("0.9");
+    private final static BigDecimal DEFAULT_ATTRACTION = new BigDecimal("0.8");
 
     private final INDArray twoDCoords;
     private final VocabCache<VocabWord> vocabCache;
     private final long size;
 
     public ResumeWordCloud(ResumeWordModel resumeWordModel, BigDecimal wordAttraction) {
+
+        Assert.notNull(resumeWordModel, "resumeWordModel cannot be null");
+
         INDArray nDCoordinates = resumeWordModel.getWeights();
 
         BigDecimal attraction = DEFAULT_ATTRACTION;

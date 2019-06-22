@@ -19,9 +19,9 @@ public class ResumeWordModel {
     private final static Logger log = LoggerFactory.getLogger(ResumeWordModel.class);
     private final Word2Vec word2Vec;
 
-    public ResumeWordModel(ResumeDataRepository resumeDataRepository, SentencePreProcessor resumePreProcessor) {
+    public ResumeWordModel(ResumeDataRepository resumeDataRepository) {
         SentenceIterator iter = new CollectionSentenceIterator(resumeDataRepository.getResumeTexts());
-        iter.setPreProcessor(resumePreProcessor);
+        iter.setPreProcessor(resumeDataRepository.getResumePreProcessor());
 
         // Split on white spaces in the line to get words
         TokenizerFactory t = new DefaultTokenizerFactory();

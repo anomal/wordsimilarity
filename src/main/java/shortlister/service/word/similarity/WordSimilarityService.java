@@ -36,7 +36,7 @@ public class WordSimilarityService {
 
         ResumeDataRepository resumeDataRepository = new ResumeDataRepository(resumes, technicalResumePreProcessor);
 
-        ResumeWordModel resumeWordModel = new ResumeWordModel(resumeDataRepository, technicalResumePreProcessor);
+        ResumeWordModel resumeWordModel = new ResumeWordModel(resumeDataRepository);
 
         ResumeWordCloud resumeWordCloud = new ResumeWordCloud(resumeWordModel, wordAttraction);
 

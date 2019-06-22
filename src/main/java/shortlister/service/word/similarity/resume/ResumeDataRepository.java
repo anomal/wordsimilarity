@@ -3,6 +3,7 @@ package shortlister.service.word.similarity.resume;
 import io.swagger.client.model.Applicant;
 import io.swagger.client.model.Resume;
 import org.deeplearning4j.text.sentenceiterator.SentencePreProcessor;
+import org.nd4j.linalg.io.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,12 +14,20 @@ public class ResumeDataRepository {
 
     private final static Logger log = LoggerFactory.getLogger(ResumeDataRepository.class);
 
+    private final SentencePreProcessor resumePreProcessor;
     private final List<String> resumeTexts;
     private final Map<String,Long> wordUniqueWordFrequencies = new HashMap<>();
     private long maxUniqueWordFrequency = 0L;
     private final List<Applicant> applicantNicknames;
 
     public ResumeDataRepository(List<Resume> resumes, SentencePreProcessor resumePreProcessor) {
+
+        Assert.notNull(resumes, "resumes cannot be null");
+        Assert.notEmpty(resumes, "resumes cannot be empty");
+        Assert.notNull(resumePreProcessor, "resumePreProcessor cannot be null");
+
+        this.resumePreProcessor = resumePreProcessor;
+
         Map<String,String> uniqueWordToIdMap = new HashMap<>();
 
         resumeTexts = resumes.stream()
@@ -91,5 +100,9 @@ public class ResumeDataRepository {
 
     public List<Applicant> getApplicantNicknames() {
         return applicantNicknames;
+    }
+
+    public SentencePreProcessor getResumePreProcessor() {
+        return resumePreProcessor;
     }
 }
