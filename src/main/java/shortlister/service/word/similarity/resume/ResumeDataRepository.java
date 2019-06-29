@@ -17,7 +17,6 @@ public class ResumeDataRepository {
     private final SentencePreProcessor resumePreProcessor;
     private final List<String> resumeTexts;
     private final Map<String,Long> wordUniqueWordFrequencies = new HashMap<>();
-    private long maxUniqueWordFrequency = 0L;
     private final List<Applicant> applicantNicknames;
 
     public ResumeDataRepository(List<Resume> resumes, SentencePreProcessor resumePreProcessor) {
@@ -50,9 +49,6 @@ public class ResumeDataRepository {
                             uniqueWordToIdMap.remove(uniqueWord);
                         }
                         wordUniqueWordFrequencies.put(uniqueWord, count);
-                        if (count > maxUniqueWordFrequency) {
-                            maxUniqueWordFrequency = count;
-                        }
                     }
 
                     return resumeText;
@@ -92,10 +88,6 @@ public class ResumeDataRepository {
 
     public Map<String,Long> getWordUniqueWordFrequencies() {
         return wordUniqueWordFrequencies;
-    }
-
-    public long getMaxUniqueWordFrequency() {
-        return maxUniqueWordFrequency;
     }
 
     public List<Applicant> getApplicantNicknames() {

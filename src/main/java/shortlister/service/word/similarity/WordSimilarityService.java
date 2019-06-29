@@ -52,12 +52,7 @@ public class WordSimilarityService {
                 word.setX(resumeWordCloud.getX(i));
                 word.setY(resumeWordCloud.getY(i));
                 word.setFrequency(freq);
-                BigDecimal size = new BigDecimal(freq).divide(
-                        new BigDecimal(resumeDataRepository.getMaxUniqueWordFrequency()),
-                        MATH_CONTEXT);
-                word.setSize(size);
-                log.info("{} {} {} {} {}", word.getName(), word.getFrequency(),
-                        word.getSize(),
+                log.info("{} {} {} {}", word.getName(), word.getFrequency(),
                         word.getX(), word.getY());
                 words.add(word);
             }
