@@ -18,9 +18,17 @@ import java.util.UUID;
 @RestController
 public class WordSimilarityRestController {
 
-    public final static String DEV_TOKEN = UUID.randomUUID().toString().replace("-","");
-    private final static int BEARER_LENGTH = "Bearer ".length();
     private final static Logger log = LoggerFactory.getLogger(WordSimilarityRestController.class);
+    public final static String DEV_TOKEN;
+    static {
+        String devToken = System.getProperty("dev.token");
+        if (devToken == null) {
+            DEV_TOKEN = UUID.randomUUID().toString().replace("-","");
+        } else {
+            DEV_TOKEN = devToken;
+        }
+    }
+    private final static int BEARER_LENGTH = "Bearer ".length();
 
     @Autowired
     private WordSimilarityService service;
