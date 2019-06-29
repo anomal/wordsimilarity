@@ -7,7 +7,6 @@ Default:
 
 ```
 mvn spring-boot:run
-
 ```
 
 With options:
