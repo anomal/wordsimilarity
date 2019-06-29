@@ -30,10 +30,15 @@ public class WordSimilarityRestController {
                                               @RequestBody WordSimilarityRequest request) throws UnauthorizedException {
         WordSimilarityResponse response = null;
         try {
-            if (authorization.length() < BEARER_LENGTH
-                    || !authorization.substring(BEARER_LENGTH ).trim().equals(DEV_TOKEN)) {
-                throw new UnauthorizedException("request token is " + authorization.substring(BEARER_LENGTH ).trim());
+            if (authorization.length() < BEARER_LENGTH) {
+                throw new UnauthorizedException("Unauthorized");
+            } else {
+                String token = authorization.substring(BEARER_LENGTH).trim();
+                if (!token.equals(DEV_TOKEN)) {
+                    throw new UnauthorizedException("Unauthorized");
+                }
             }
+
             response = service.analyze(request.getResumes(), request.getWordAttraction());
             return response;
         } catch (Exception e) {
