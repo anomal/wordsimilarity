@@ -3,6 +3,7 @@ package shortlister.service.word.similarity;
 import io.swagger.client.model.Resume;
 import io.swagger.client.model.Word;
 import io.swagger.client.model.WordSimilarityResponse;
+import org.deeplearning4j.text.sentenceiterator.SentencePreProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,12 +28,11 @@ public class WordSimilarityService {
     private final static MathContext MATH_CONTEXT = new MathContext(3, RoundingMode.HALF_UP);
 
     @Autowired
-    private TechnicalResumePreProcessor technicalResumePreProcessor;
-
-    @Autowired
     private ResumeWordComparator resumeWordComparator;
 
-    public WordSimilarityResponse analyze (List<Resume> resumes, BigDecimal wordAttraction) {
+    public WordSimilarityResponse analyze (List<Resume> resumes, List<String> ignoredWords, BigDecimal wordAttraction) {
+
+        SentencePreProcessor technicalResumePreProcessor = new TechnicalResumePreProcessor(ignoredWords);
 
         ResumeDataRepository resumeDataRepository = new ResumeDataRepository(resumes, technicalResumePreProcessor);
 
