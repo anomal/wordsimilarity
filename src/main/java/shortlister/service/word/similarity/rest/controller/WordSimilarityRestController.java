@@ -48,7 +48,7 @@ public class WordSimilarityRestController {
                 }
             }
 
-            response = service.analyze(request.getResumes(), request.getWordAttraction());
+            response = service.analyze(request.getResumes(), request.getIgnore(), request.getWordAttraction());
             return response;
         } catch (AccessDeniedException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage(), e);

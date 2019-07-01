@@ -56,6 +56,10 @@ definitions:
     required:
       - resumes
     properties:
+      ignore:
+        type: array
+        items:
+          type: string
       wordAttraction:
         type: number
       resumes:
